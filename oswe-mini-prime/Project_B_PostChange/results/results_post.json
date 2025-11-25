@@ -1,0 +1,56 @@
+[
+  {
+    "id": "normal-case",
+    "status": 200,
+    "latency": 4.1006386280059814,
+    "body": {
+      "available": true,
+      "note": "v2_confirmed",
+      "quantity": 10,
+      "sku": "ABC123"
+    },
+    "pass": true
+  },
+  {
+    "id": "boundary-zero",
+    "status": 200,
+    "latency": 4.103487253189087,
+    "body": {
+      "available": false,
+      "note": "v2_confirmed",
+      "quantity": 0,
+      "sku": "OUTOFSTOCKZ"
+    },
+    "pass": true
+  },
+  {
+    "id": "async-pending",
+    "status": 200,
+    "latency": 8.701688289642334,
+    "body": {
+      "available": true,
+      "note": "v1_adapter",
+      "quantity": 10,
+      "sku": "ASYNC1P"
+    },
+    "pass": true
+  },
+  {
+    "id": "malformed-sku",
+    "status": 400,
+    "latency": 2.0634145736694336,
+    "pass": true
+  },
+  {
+    "id": "v2-error",
+    "status": 200,
+    "latency": 6.198500633239746,
+    "body": {
+      "available": true,
+      "note": "v1_adapter",
+      "quantity": 10,
+      "sku": "ABCERRE"
+    },
+    "pass": true
+  }
+]
