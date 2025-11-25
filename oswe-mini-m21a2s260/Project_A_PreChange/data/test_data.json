@@ -1,7 +1,0 @@
-[
-  {"id":"normal","sku":"ABC123","mode":"normal","expected":{"http_status":200,"available":true,"quantity":10,"note":"legacy"}},
-  {"id":"zero","sku":"ITEM_ZERO","mode":"normal","expected":{"http_status":200,"available":false,"quantity":0,"note":"legacy"}},
-  {"id":"missing","sku":null,"mode":"normal","expected":{"http_status":400,"available":false,"quantity":0}},
-  {"id":"error","sku":"ERRSKU","mode":"error","expected":{"http_status":200,"available":true,"quantity":10}},
-  {"id":"latency","sku":"LATE123","mode":"delay","expected":{"http_status":200,"available":true,"quantity":10}}
-]

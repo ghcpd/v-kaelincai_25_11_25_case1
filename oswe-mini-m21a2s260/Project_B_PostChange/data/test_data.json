@@ -1,7 +1,0 @@
-[
-  {"id":"normal","sku":"ABC123","regionId":"ap-sg-1","warehouseGroup":"WG-2","expected":{"http_status":200,"available":true,"quantity":12}},
-  {"id":"zero","sku":"ITEM_ZERO","regionId":"ap-sg-1","warehouseGroup":"WG-2","expected":{"http_status":200,"available":false,"quantity":0}},
-  {"id":"pending","sku":"WAIT_PEND","regionId":"ap-sg-1","warehouseGroup":"WG-2","expected":{"http_status":200,"available":true,"quantity":5}},
-  {"id":"bad_input","sku":"ABC_BADWG","regionId":"ap-sg-1","warehouseGroup":"INVALID","expected":{"http_status":400,"available":false}},
-  {"id":"latency_error","sku":"TIMEOUT123","regionId":"ap-sg-1","warehouseGroup":"WG-2","expected":{"http_status":200,"available":true,"quantity":12}}
-]
