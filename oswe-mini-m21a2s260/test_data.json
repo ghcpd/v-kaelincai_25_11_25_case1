@@ -1,0 +1,9 @@
+{
+  "cases": [
+    {"id":"normal","sku":"ABC123","expected":{"pre":{"available":true,"quantity":10},"post":{"available":true,"quantity":12}}},
+    {"id":"zero","sku":"ITEM_ZERO","expected":{"pre":{"available":false,"quantity":0},"post":{"available":false,"quantity":0}}},
+    {"id":"pending","sku":"WAIT_PEND","expected":{"pre":{"available":true,"quantity":10},"post":{"available":true,"quantity":5}}},
+    {"id":"bad_input","sku":null,"expected":{"pre":{"http_status":400},"post":{"http_status":400}}},
+    {"id":"latency","sku":"LATE123","expected":{"pre":{"available":true},"post":{"available":true}}}
+  ]
+}
