@@ -1,0 +1,87 @@
+[
+  {
+    "case": "normal_confirmed",
+    "status": "ok",
+    "output": {
+      "sku": "ABC123",
+      "available": true,
+      "quantity": 12,
+      "note": "confirmed"
+    },
+    "expected": {
+      "status": "ok",
+      "available": true,
+      "note": "confirmed"
+    },
+    "elapsed": 1.02994966506958,
+    "passed": true
+  },
+  {
+    "case": "boundary_zero",
+    "status": "ok",
+    "output": {
+      "sku": "ZERO1",
+      "available": false,
+      "quantity": 0,
+      "note": "confirmed"
+    },
+    "expected": {
+      "status": "ok",
+      "available": false,
+      "note": "confirmed"
+    },
+    "elapsed": 1.0101089477539062,
+    "passed": true
+  },
+  {
+    "case": "async_pending_then_confirm",
+    "status": "ok",
+    "output": {
+      "sku": "PEND1",
+      "available": true,
+      "quantity": 7,
+      "note": "confirmed_after_poll"
+    },
+    "expected": {
+      "status": "ok",
+      "available": true,
+      "note": "confirmed_after_poll"
+    },
+    "elapsed": 2.2338879108428955,
+    "passed": true
+  },
+  {
+    "case": "malformed_missing_region",
+    "status": "ok",
+    "output": {
+      "sku": "BAD1",
+      "available": true,
+      "quantity": 12,
+      "note": "used_v1_fallback"
+    },
+    "expected": {
+      "status": "fallback",
+      "available": true,
+      "note": "used_v1_fallback"
+    },
+    "elapsed": 1.0312554836273193,
+    "passed": true
+  },
+  {
+    "case": "high_latency_error",
+    "status": "ok",
+    "output": {
+      "sku": "SLOW1",
+      "available": true,
+      "quantity": 12,
+      "note": "v2_error_fallback"
+    },
+    "expected": {
+      "status": "fallback",
+      "available": true,
+      "note": "v2_error_fallback"
+    },
+    "elapsed": 2.034376382827759,
+    "passed": true
+  }
+]
