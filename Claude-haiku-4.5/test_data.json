@@ -1,0 +1,284 @@
+{
+  "test_cases": [
+    {
+      "id": "TC001",
+      "name": "Normal Case - Immediate Confirmed Availability",
+      "description": "Standard inventory check returning immediate confirmed availability",
+      "category": "normal",
+      "v1_request": {
+        "sku": "ABC123",
+        "warehouseId": "WH-US-EAST-1"
+      },
+      "v1_expected_response": {
+        "statusCode": 200,
+        "body": {
+          "sku": "ABC123",
+          "available": true,
+          "quantity": 45,
+          "lastUpdated": "2025-11-01T12:00:00Z"
+        }
+      },
+      "v2_request": {
+        "sku": "ABC123",
+        "regionId": "ap-sg-1",
+        "warehouseGroup": "WG-2"
+      },
+      "v2_expected_response": {
+        "statusCode": 200,
+        "body": {
+          "sku": "ABC123",
+          "available": true,
+          "quantity": 45,
+          "availabilityStatus": "confirmed",
+          "syncTimestamp": "2025-11-01T12:00:00Z"
+        }
+      },
+      "acceptance_criteria": [
+        "v1: Returns 200 with available=true",
+        "v2: Returns 200 with available=true and availabilityStatus=confirmed",
+        "Quantities match or v2 shows inventory at same warehouse level"
+      ],
+      "pass_condition": "Both return available=true, latency < 500ms"
+    },
+    {
+      "id": "TC002",
+      "name": "Boundary Case - Zero Inventory",
+      "description": "Edge case where inventory quantity is exactly zero",
+      "category": "boundary",
+      "v1_request": {
+        "sku": "XYZ789",
+        "warehouseId": "WH-US-WEST-2"
+      },
+      "v1_expected_response": {
+        "statusCode": 200,
+        "body": {
+          "sku": "XYZ789",
+          "available": false,
+          "quantity": 0,
+          "lastUpdated": "2025-11-01T11:45:00Z"
+        }
+      },
+      "v2_request": {
+        "sku": "XYZ789",
+        "regionId": "us-west-2",
+        "warehouseGroup": "WG-1"
+      },
+      "v2_expected_response": {
+        "statusCode": 200,
+        "body": {
+          "sku": "XYZ789",
+          "available": false,
+          "quantity": 0,
+          "availabilityStatus": "out_of_stock",
+          "syncTimestamp": "2025-11-01T11:45:00Z"
+        }
+      },
+      "acceptance_criteria": [
+        "v1: Returns available=false when quantity=0",
+        "v2: Returns available=false with availabilityStatus=out_of_stock",
+        "Both consistently mark as unavailable"
+      ],
+      "pass_condition": "Both return available=false, status reflects zero inventory"
+    },
+    {
+      "id": "TC003",
+      "name": "Asynchronous/Partial Case - Pending Status with Polling",
+      "description": "API returns pending status indicating eventual consistency; test polling mechanism",
+      "category": "async_partial",
+      "v1_request": {
+        "sku": "NEW456",
+        "warehouseId": "WH-EU-CENTRAL-1"
+      },
+      "v1_expected_response": {
+        "statusCode": 200,
+        "body": {
+          "sku": "NEW456",
+          "available": null,
+          "quantity": null,
+          "lastUpdated": "2025-11-01T12:05:00Z",
+          "note": "Inventory update in progress"
+        }
+      },
+      "v2_request": {
+        "sku": "NEW456",
+        "regionId": "eu-central-1",
+        "warehouseGroup": "WG-3"
+      },
+      "v2_expected_response": {
+        "statusCode": 202,
+        "body": {
+          "sku": "NEW456",
+          "available": null,
+          "quantity": null,
+          "availabilityStatus": "pending",
+          "syncTimestamp": "2025-11-01T12:05:00Z",
+          "estimatedSync": "2025-11-01T12:15:00Z",
+          "pollingUrl": "/api/v2/stock/NEW456?regionId=eu-central-1&warehouseGroup=WG-3"
+        }
+      },
+      "polling_response": {
+        "statusCode": 200,
+        "body": {
+          "sku": "NEW456",
+          "available": true,
+          "quantity": 23,
+          "availabilityStatus": "confirmed",
+          "syncTimestamp": "2025-11-01T12:15:00Z"
+        }
+      },
+      "acceptance_criteria": [
+        "v1: Returns null values for in-progress inventory",
+        "v2: Returns 202 Accepted with pending status and pollingUrl",
+        "Service polls v2 endpoint and receives updated data",
+        "After polling, v2 returns confirmed availability"
+      ],
+      "pass_condition": "v2 polling completes within 3 retries, final status confirmed"
+    },
+    {
+      "id": "TC004",
+      "name": "Invalid/Malformed Input - Missing regionId",
+      "description": "v2 API requires regionId parameter; test error handling for missing parameter",
+      "category": "invalid",
+      "v1_request": {
+        "sku": "DEF012",
+        "warehouseId": "WH-APAC-1"
+      },
+      "v1_expected_response": {
+        "statusCode": 200,
+        "body": {
+          "sku": "DEF012",
+          "available": true,
+          "quantity": 15,
+          "lastUpdated": "2025-11-01T12:10:00Z"
+        }
+      },
+      "v2_request": {
+        "sku": "DEF012",
+        "warehouseGroup": "WG-4"
+      },
+      "v2_expected_response": {
+        "statusCode": 400,
+        "body": {
+          "error": "Bad Request",
+          "message": "Missing required parameter: regionId",
+          "code": "PARAM_MISSING_REGION_ID"
+        }
+      },
+      "acceptance_criteria": [
+        "v1: Request succeeds (no regionId required)",
+        "v2: Request fails with 400 Bad Request",
+        "Service detects missing regionId and returns error to caller",
+        "Service has fallback or error handling strategy"
+      ],
+      "pass_condition": "v2 error caught, service returns graceful error response"
+    },
+    {
+      "id": "TC005",
+      "name": "High-Latency / Error Case - Timeout and Retry",
+      "description": "Test handling of upstream API timeout and retry logic with exponential backoff",
+      "category": "error",
+      "v1_request": {
+        "sku": "SLOW001",
+        "warehouseId": "WH-REMOTE-1"
+      },
+      "v1_expected_response": {
+        "statusCode": 504,
+        "body": {
+          "error": "Gateway Timeout",
+          "message": "Upstream service did not respond within 5 seconds"
+        }
+      },
+      "v1_latency_ms": 5000,
+      "v2_request": {
+        "sku": "SLOW001",
+        "regionId": "ap-remote-1",
+        "warehouseGroup": "WG-5"
+      },
+      "v2_expected_response_attempt_1": {
+        "statusCode": 504,
+        "body": {
+          "error": "Gateway Timeout",
+          "message": "Upstream service did not respond within 5 seconds"
+        },
+        "latency_ms": 5000
+      },
+      "v2_expected_response_attempt_2": {
+        "statusCode": 503,
+        "body": {
+          "error": "Service Unavailable",
+          "message": "Temporary service degradation, retrying..."
+        },
+        "latency_ms": 2000
+      },
+      "v2_expected_response_attempt_3": {
+        "statusCode": 200,
+        "body": {
+          "sku": "SLOW001",
+          "available": true,
+          "quantity": 8,
+          "availabilityStatus": "confirmed",
+          "syncTimestamp": "2025-11-01T12:20:00Z",
+          "retryCount": 2
+        }
+      },
+      "acceptance_criteria": [
+        "v1: Handles timeout gracefully or returns error",
+        "v2: Implements retry logic with exponential backoff",
+        "v2: Eventually succeeds after 2-3 retries",
+        "Service tracks retry count and logs retry attempts",
+        "Fallback strategy handles max retries exceeded"
+      ],
+      "pass_condition": "v2 succeeds after retries, latency tracked, retry count correct"
+    },
+    {
+      "id": "TC006",
+      "name": "Backward Compatibility - Feature Flag Toggle",
+      "description": "Service can toggle between v1 and v2 API using feature flag without code changes",
+      "category": "compatibility",
+      "v1_request": {
+        "sku": "TOGGLE001",
+        "warehouseId": "WH-TEST-1"
+      },
+      "v1_expected_response": {
+        "statusCode": 200,
+        "body": {
+          "sku": "TOGGLE001",
+          "available": true,
+          "quantity": 30,
+          "lastUpdated": "2025-11-01T12:25:00Z"
+        }
+      },
+      "v2_request": {
+        "sku": "TOGGLE001",
+        "regionId": "test-region-1",
+        "warehouseGroup": "WG-TEST"
+      },
+      "v2_expected_response": {
+        "statusCode": 200,
+        "body": {
+          "sku": "TOGGLE001",
+          "available": true,
+          "quantity": 30,
+          "availabilityStatus": "confirmed",
+          "syncTimestamp": "2025-11-01T12:25:00Z"
+        }
+      },
+      "acceptance_criteria": [
+        "Feature flag 'use_v2_api' controls which endpoint is called",
+        "When flag=false: calls v1 endpoint, returns v1 format",
+        "When flag=true: calls v2 endpoint, translates to consistent output format",
+        "Same business logic applies regardless of flag state"
+      ],
+      "pass_condition": "Both flag states execute, results converge to same availability decision"
+    }
+  ],
+  "config": {
+    "v1_base_url": "http://localhost:5001",
+    "v1_endpoint": "/api/v1/checkStock",
+    "v2_base_url": "http://localhost:5002",
+    "v2_endpoint": "/api/v2/stock/availability",
+    "timeout_ms": 5000,
+    "max_retries": 3,
+    "retry_backoff_ms": 500
+  }
+}
