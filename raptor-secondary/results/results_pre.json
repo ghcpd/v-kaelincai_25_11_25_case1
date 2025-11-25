@@ -1,0 +1,190 @@
+{
+  "results": [
+    {
+      "id": "TC1",
+      "description": "Normal case \u2013 immediate confirmed availability",
+      "input": {
+        "sku": "ABC123",
+        "regionId": "ap-sg-1",
+        "warehouseGroup": "WG-1"
+      },
+      "expected": {
+        "http_status": 200,
+        "availability": {
+          "available": true,
+          "quantity": 12,
+          "note": "legacy-confirmed"
+        },
+        "fallback_used": false
+      },
+      "actual": {
+        "http_status": 200,
+        "availability": {
+          "available": true,
+          "quantity": 12,
+          "note": "legacy-confirmed"
+        },
+        "fallback_used": false,
+        "latency_ms": 20.303400000557303
+      },
+      "passed": true
+    },
+    {
+      "id": "TC2",
+      "description": "Boundary case \u2013 quantity equals reserve threshold",
+      "input": {
+        "sku": "THRESH2",
+        "regionId": "us-east-1",
+        "warehouseGroup": "WG-2"
+      },
+      "expected": {
+        "http_status": 200,
+        "availability": {
+          "available": true,
+          "quantity": 2,
+          "note": "legacy-threshold-met"
+        },
+        "fallback_used": false
+      },
+      "actual": {
+        "http_status": 200,
+        "availability": {
+          "available": true,
+          "quantity": 2,
+          "note": "legacy-threshold-met"
+        },
+        "fallback_used": false,
+        "latency_ms": 13.591399998404086
+      },
+      "passed": true
+    },
+    {
+      "id": "TC3",
+      "description": "Async partial \u2013 pending then confirmed",
+      "input": {
+        "sku": "PEND1",
+        "regionId": "eu-west-1",
+        "warehouseGroup": "WG-3"
+      },
+      "expected": {
+        "http_status": 200,
+        "availability": {
+          "available": false,
+          "quantity": 0,
+          "note": "legacy-no-region"
+        },
+        "fallback_used": false
+      },
+      "actual": {
+        "http_status": 200,
+        "availability": {
+          "available": false,
+          "quantity": 0,
+          "note": "legacy-no-region"
+        },
+        "fallback_used": false,
+        "latency_ms": 3.675100044347346
+      },
+      "passed": true
+    },
+    {
+      "id": "TC4",
+      "description": "Invalid input \u2013 missing regionId",
+      "input": {
+        "sku": "BAD1",
+        "warehouseGroup": "WG-1"
+      },
+      "expected": {
+        "http_status": 200,
+        "availability": {
+          "available": true,
+          "quantity": 7,
+          "note": "legacy-ignores-region"
+        },
+        "fallback_used": false
+      },
+      "actual": {
+        "http_status": 200,
+        "availability": {
+          "available": true,
+          "quantity": 7,
+          "note": "legacy-ignores-region"
+        },
+        "fallback_used": false,
+        "latency_ms": 2.67290003830567
+      },
+      "passed": true
+    },
+    {
+      "id": "TC5",
+      "description": "High-latency/error \u2013 v2 timeout then fallback to v1",
+      "input": {
+        "sku": "ERR500",
+        "regionId": "ap-sg-1",
+        "warehouseGroup": "WG-9"
+      },
+      "expected": {
+        "http_status": 200,
+        "availability": {
+          "available": false,
+          "quantity": 0,
+          "note": "legacy-error"
+        },
+        "fallback_used": false
+      },
+      "actual": {
+        "http_status": 200,
+        "availability": {
+          "available": false,
+          "quantity": 0,
+          "note": "legacy-error"
+        },
+        "fallback_used": false,
+        "latency_ms": 14.493399998173118,
+        "upstream_status": 500
+      },
+      "passed": true
+    },
+    {
+      "id": "TC6",
+      "description": "Malformed input \u2013 non-string SKU",
+      "input": {
+        "sku": 12345,
+        "regionId": "ap-sg-1",
+        "warehouseGroup": "WG-1"
+      },
+      "expected": {
+        "http_status": 400,
+        "availability": {
+          "available": false,
+          "quantity": 0,
+          "note": "legacy-validation-error"
+        },
+        "fallback_used": false
+      },
+      "actual": {
+        "http_status": 400,
+        "availability": {
+          "available": false,
+          "quantity": 0,
+          "note": "legacy-validation-error"
+        },
+        "fallback_used": false,
+        "latency_ms": 0
+      },
+      "passed": true
+    }
+  ],
+  "metrics": {
+    "total_cases": 6,
+    "passed": 6,
+    "pass_rate": 1.0,
+    "latency_ms": {
+      "p50": 8.633250021375716,
+      "p95": 24.079900002107024,
+      "min": 0,
+      "max": 20.303400000557303
+    },
+    "error_rate": 0.0
+  }
+}

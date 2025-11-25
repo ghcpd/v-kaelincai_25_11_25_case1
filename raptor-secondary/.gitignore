@@ -1,0 +1,29 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*.tmp
+~$*
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual envs
+.venv/
+venv/
+.env/
+
+
+
+# VS Code
+.vscode/
+
+# Shell / PowerShell artifacts
+*.ps1psm1
+
+# Misc
+*.bak
+*.old

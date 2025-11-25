@@ -1,0 +1,8 @@
+[
+  {"id": "TC1", "expected_post": {"http_status": 200, "availability": {"available": true, "quantity": 12, "note": "confirmed"}, "fallback_used": false, "async": false}},
+  {"id": "TC2", "expected_post": {"http_status": 200, "availability": {"available": true, "quantity": 2, "note": "confirmed"}, "fallback_used": false, "async": false}},
+  {"id": "TC3", "expected_post": {"http_status": 200, "availability": {"available": true, "quantity": 5, "note": "confirmed-after-poll"}, "fallback_used": false, "async": true}},
+  {"id": "TC4", "expected_post": {"http_status": 400, "availability": {"available": false, "quantity": 0, "note": "invalid-input"}, "fallback_used": true, "async": false}},
+  {"id": "TC5", "expected_post": {"http_status": 200, "availability": {"available": true, "quantity": 3, "note": "fallback-to-v1"}, "fallback_used": true, "async": false}},
+  {"id": "TC6", "expected_post": {"http_status": 400, "availability": {"available": false, "quantity": 0, "note": "invalid-input"}, "fallback_used": false, "async": false}}
+]

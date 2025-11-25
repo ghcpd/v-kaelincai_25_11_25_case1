@@ -1,0 +1,143 @@
+{
+  "pre_metrics": {
+    "total_cases": 6,
+    "passed": 6,
+    "pass_rate": 1.0,
+    "latency_ms": {
+      "p50": 8.633250021375716,
+      "p95": 24.079900002107024,
+      "min": 0,
+      "max": 20.303400000557303
+    },
+    "error_rate": 0.0
+  },
+  "post_metrics": {
+    "total_cases": 6,
+    "passed": 6,
+    "pass_rate": 1.0,
+    "latency_ms": {
+      "p50": 2.614200027892366,
+      "p95": 870.1245299656875,
+      "min": 0,
+      "max": 528.8106999942102
+    },
+    "fallback_count": 2,
+    "fallback_rate": 0.3333333333333333,
+    "error_rate": 0.0
+  },
+  "latency_improvement_ms": {
+    "p50": -261.23134995577857,
+    "p95": 2.695224990020506,
+    "avg": -80.50256666804974
+  },
+  "comparison": [
+    {
+      "id": "TC1",
+      "pre_passed": true,
+      "post_passed": true,
+      "pre_availability": {
+        "available": true,
+        "quantity": 12,
+        "note": "legacy-confirmed"
+      },
+      "post_availability": {
+        "available": true,
+        "quantity": 12,
+        "note": "confirmed"
+      },
+      "pre_latency_ms": 20.303400000557303,
+      "post_latency_ms": 2.4710000143386424,
+      "latency_delta_ms": 17.83239998621866
+    },
+    {
+      "id": "TC2",
+      "pre_passed": true,
+      "post_passed": true,
+      "pre_availability": {
+        "available": true,
+        "quantity": 2,
+        "note": "legacy-threshold-met"
+      },
+      "post_availability": {
+        "available": true,
+        "quantity": 2,
+        "note": "confirmed"
+      },
+      "pre_latency_ms": 13.591399998404086,
+      "post_latency_ms": 2.7574000414460897,
+      "latency_delta_ms": 10.833999956957996
+    },
+    {
+      "id": "TC3",
+      "pre_passed": true,
+      "post_passed": true,
+      "pre_availability": {
+        "available": false,
+        "quantity": 0,
+        "note": "legacy-no-region"
+      },
+      "post_availability": {
+        "available": true,
+        "quantity": 5,
+        "note": "confirmed-after-poll"
+      },
+      "pre_latency_ms": 3.675100044347346,
+      "post_latency_ms": 528.8106999942102,
+      "latency_delta_ms": -525.1355999498628
+    },
+    {
+      "id": "TC4",
+      "pre_passed": true,
+      "post_passed": true,
+      "pre_availability": {
+        "available": true,
+        "quantity": 7,
+        "note": "legacy-ignores-region"
+      },
+      "post_availability": {
+        "available": false,
+        "quantity": 0,
+        "note": "invalid-input"
+      },
+      "pre_latency_ms": 2.67290003830567,
+      "post_latency_ms": 0,
+      "latency_delta_ms": 2.67290003830567
+    },
+    {
+      "id": "TC5",
+      "pre_passed": true,
+      "post_passed": true,
+      "pre_availability": {
+        "available": false,
+        "quantity": 0,
+        "note": "legacy-error"
+      },
+      "post_availability": {
+        "available": true,
+        "quantity": 3,
+        "note": "fallback-to-v1"
+      },
+      "pre_latency_ms": 14.493399998173118,
+      "post_latency_ms": 3.7125000380910933,
+      "latency_delta_ms": 10.780899960082024
+    },
+    {
+      "id": "TC6",
+      "pre_passed": true,
+      "post_passed": true,
+      "pre_availability": {
+        "available": false,
+        "quantity": 0,
+        "note": "legacy-validation-error"
+      },
+      "post_availability": {
+        "available": false,
+        "quantity": 0,
+        "note": "invalid-input"
+      },
+      "pre_latency_ms": 0,
+      "post_latency_ms": 0,
+      "latency_delta_ms": 0
+    }
+  ]
+}

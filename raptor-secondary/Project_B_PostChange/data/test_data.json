@@ -1,0 +1,104 @@
+[
+  {
+    "id": "TC1",
+    "description": "Normal case – immediate confirmed availability",
+    "input": {"sku": "ABC123", "regionId": "ap-sg-1", "warehouseGroup": "WG-1"},
+    "reserveThreshold": 1,
+    "expected_pre": {
+      "http_status": 200,
+      "availability": {"available": true, "quantity": 12, "note": "legacy-confirmed"},
+      "fallback_used": false
+    },
+    "expected_post": {
+      "http_status": 200,
+      "availability": {"available": true, "quantity": 12, "note": "confirmed"},
+      "fallback_used": false,
+      "async": false
+    }
+  },
+  {
+    "id": "TC2",
+    "description": "Boundary case – quantity equals reserve threshold",
+    "input": {"sku": "THRESH2", "regionId": "us-east-1", "warehouseGroup": "WG-2"},
+    "reserveThreshold": 2,
+    "expected_pre": {
+      "http_status": 200,
+      "availability": {"available": true, "quantity": 2, "note": "legacy-threshold-met"},
+      "fallback_used": false
+    },
+    "expected_post": {
+      "http_status": 200,
+      "availability": {"available": true, "quantity": 2, "note": "confirmed"},
+      "fallback_used": false,
+      "async": false
+    }
+  },
+  {
+    "id": "TC3",
+    "description": "Async partial – pending then confirmed",
+    "input": {"sku": "PEND1", "regionId": "eu-west-1", "warehouseGroup": "WG-3"},
+    "reserveThreshold": 1,
+    "expected_pre": {
+      "http_status": 200,
+      "availability": {"available": false, "quantity": 0, "note": "legacy-no-region"},
+      "fallback_used": false
+    },
+    "expected_post": {
+      "http_status": 200,
+      "availability": {"available": true, "quantity": 5, "note": "confirmed-after-poll"},
+      "fallback_used": false,
+      "async": true
+    }
+  },
+  {
+    "id": "TC4",
+    "description": "Invalid input – missing regionId",
+    "input": {"sku": "BAD1", "warehouseGroup": "WG-1"},
+    "reserveThreshold": 1,
+    "expected_pre": {
+      "http_status": 200,
+      "availability": {"available": true, "quantity": 7, "note": "legacy-ignores-region"},
+      "fallback_used": false
+    },
+    "expected_post": {
+      "http_status": 400,
+      "availability": {"available": false, "quantity": 0, "note": "invalid-input"},
+      "fallback_used": true,
+      "async": false
+    }
+  },
+  {
+    "id": "TC5",
+    "description": "High-latency/error – v2 timeout then fallback to v1",
+    "input": {"sku": "ERR500", "regionId": "ap-sg-1", "warehouseGroup": "WG-9"},
+    "reserveThreshold": 1,
+    "expected_pre": {
+      "http_status": 200,
+      "availability": {"available": false, "quantity": 0, "note": "legacy-error"},
+      "fallback_used": false
+    },
+    "expected_post": {
+      "http_status": 200,
+      "availability": {"available": true, "quantity": 3, "note": "fallback-to-v1"},
+      "fallback_used": true,
+      "async": false
+    }
+  },
+  {
+    "id": "TC6",
+    "description": "Malformed input – non-string SKU",
+    "input": {"sku": 12345, "regionId": "ap-sg-1", "warehouseGroup": "WG-1"},
+    "reserveThreshold": 1,
+    "expected_pre": {
+      "http_status": 400,
+      "availability": {"available": false, "quantity": 0, "note": "legacy-validation-error"},
+      "fallback_used": false
+    },
+    "expected_post": {
+      "http_status": 400,
+      "availability": {"available": false, "quantity": 0, "note": "invalid-input"},
+      "fallback_used": false,
+      "async": false
+    }
+  }
+]

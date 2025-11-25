@@ -1,0 +1,14 @@
+{
+  "total_cases": 6,
+  "passed": 6,
+  "pass_rate": 1.0,
+  "latency_ms": {
+    "p50": 2.614200027892366,
+    "p95": 870.1245299656875,
+    "min": 0,
+    "max": 528.8106999942102
+  },
+  "fallback_count": 2,
+  "fallback_rate": 0.3333333333333333,
+  "error_rate": 0.0
+}
