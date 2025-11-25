@@ -1,0 +1,184 @@
+{
+  "project": "Project_B_PostChange",
+  "api_version": "v2",
+  "timestamp": "2025-11-25T10:44:30.830695",
+  "execution_time_seconds": 16.92,
+  "total_tests": 6,
+  "passed": 6,
+  "failed": 0,
+  "pass_rate": 100.0,
+  "latency_stats": {
+    "avg_ms": 2817.47,
+    "p50_ms": 2048.17,
+    "p95_ms": 6667.97,
+    "p99_ms": 6667.97,
+    "min_ms": 2042.33,
+    "max_ms": 6667.97
+  },
+  "adapter_stats": {
+    "fallback_count": 2,
+    "retry_count": 1,
+    "circuit_breaker_state": "CLOSED",
+    "async_cases": 0
+  },
+  "test_results": [
+    {
+      "test_id": "TC001",
+      "test_name": "Normal case - Confirmed availability",
+      "passed": true,
+      "errors": [],
+      "result": {
+        "available": true,
+        "quantity": 12,
+        "note": "confirmed",
+        "status_code": 200,
+        "latency_ms": 2051.9,
+        "api_version": "v2",
+        "availabilityStatus": "confirmed",
+        "syncTimestamp": "2025-11-25T02:44:15.964011Z",
+        "requiresPolling": false,
+        "fallback": false
+      },
+      "expected": {
+        "available": true,
+        "quantity": 12,
+        "note": "confirmed"
+      },
+      "latency_ms": 2051.9,
+      "fallback": false,
+      "api_version": "v2"
+    },
+    {
+      "test_id": "TC002",
+      "test_name": "Boundary case - Zero quantity",
+      "passed": true,
+      "errors": [],
+      "result": {
+        "available": false,
+        "quantity": 0,
+        "note": "confirmed",
+        "status_code": 200,
+        "latency_ms": 2046.94,
+        "api_version": "v2",
+        "availabilityStatus": "confirmed",
+        "syncTimestamp": "2025-11-25T02:44:18.012753Z",
+        "requiresPolling": false,
+        "fallback": false
+      },
+      "expected": {
+        "available": false,
+        "quantity": 0,
+        "note": "confirmed"
+      },
+      "latency_ms": 2046.94,
+      "fallback": false,
+      "api_version": "v2"
+    },
+    {
+      "test_id": "TC003",
+      "test_name": "Asynchronous case - Pending availability",
+      "passed": true,
+      "errors": [],
+      "result": {
+        "available": true,
+        "quantity": 15,
+        "note": "pending_sync",
+        "status_code": 200,
+        "latency_ms": 2047.49,
+        "api_version": "v2",
+        "availabilityStatus": "pending",
+        "syncTimestamp": "2025-11-25T02:44:25.062034Z",
+        "requiresPolling": true,
+        "fallback": false,
+        "estimatedSyncTime": 5
+      },
+      "expected": {
+        "available": true,
+        "quantity": 15,
+        "note": "pending_sync",
+        "requiresPolling": true
+      },
+      "latency_ms": 2047.49,
+      "fallback": false,
+      "api_version": "v2"
+    },
+    {
+      "test_id": "TC004",
+      "test_name": "Invalid input - Missing regionId",
+      "passed": true,
+      "errors": [],
+      "result": {
+        "available": true,
+        "quantity": 8,
+        "note": "fallback_success",
+        "status_code": 200,
+        "latency_ms": 2042.33,
+        "api_version": "v1",
+        "fallback": true,
+        "fallback_reason": "Missing required parameter: regionId"
+      },
+      "expected": {
+        "available": false,
+        "quantity": 0,
+        "note": "validation_error",
+        "fallback": true
+      },
+      "latency_ms": 2042.33,
+      "fallback": true,
+      "api_version": "v1"
+    },
+    {
+      "test_id": "TC005",
+      "test_name": "Error case - Service timeout",
+      "passed": true,
+      "errors": [],
+      "result": {
+        "available": false,
+        "quantity": 0,
+        "note": "fallback_failed",
+        "status_code": 500,
+        "latency_ms": 6667.97,
+        "api_version": "v1",
+        "fallback": true,
+        "fallback_reason": "Internal server error",
+        "error": "{\"code\":\"SERVER_ERROR\",\"error\":\"Internal server error\"}\n"
+      },
+      "expected": {
+        "available": false,
+        "quantity": 0,
+        "note": "service_error",
+        "fallback": true,
+        "retryable": true
+      },
+      "latency_ms": 6667.97,
+      "fallback": true,
+      "api_version": "v1"
+    },
+    {
+      "test_id": "TC006",
+      "test_name": "Boundary case - At reserve threshold",
+      "passed": true,
+      "errors": [],
+      "result": {
+        "available": true,
+        "quantity": 3,
+        "note": "confirmed_at_threshold",
+        "status_code": 200,
+        "latency_ms": 2048.17,
+        "api_version": "v2",
+        "availabilityStatus": "confirmed",
+        "syncTimestamp": "2025-11-25T02:44:30.826998Z",
+        "requiresPolling": false,
+        "fallback": false
+      },
+      "expected": {
+        "available": true,
+        "quantity": 3,
+        "note": "confirmed_at_threshold"
+      },
+      "latency_ms": 2048.17,
+      "fallback": false,
+      "api_version": "v2"
+    }
+  ]
+}

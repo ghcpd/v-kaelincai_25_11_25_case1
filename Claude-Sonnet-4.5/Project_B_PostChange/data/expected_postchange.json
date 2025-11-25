@@ -1,0 +1,66 @@
+[
+  {
+    "test_id": "TC001",
+    "expected": {
+      "available": true,
+      "quantity": 12,
+      "note": "confirmed",
+      "status_code": 200,
+      "api_version": "v2",
+      "requiresPolling": false
+    }
+  },
+  {
+    "test_id": "TC002",
+    "expected": {
+      "available": false,
+      "quantity": 0,
+      "note": "confirmed",
+      "status_code": 200,
+      "api_version": "v2"
+    }
+  },
+  {
+    "test_id": "TC003",
+    "expected": {
+      "available": true,
+      "quantity": 15,
+      "note": "pending_sync",
+      "status_code": 200,
+      "api_version": "v2",
+      "requiresPolling": true,
+      "availabilityStatus": "pending"
+    }
+  },
+  {
+    "test_id": "TC004",
+    "expected": {
+      "available": false,
+      "note": "validation_error",
+      "status_code": 400,
+      "fallback": true,
+      "fallback_reason": "Missing required parameter: regionId"
+    }
+  },
+  {
+    "test_id": "TC005",
+    "expected": {
+      "available": false,
+      "note": "service_error",
+      "status_code": 500,
+      "fallback": true,
+      "retryable": true
+    }
+  },
+  {
+    "test_id": "TC006",
+    "expected": {
+      "available": true,
+      "quantity": 3,
+      "note": "confirmed_at_threshold",
+      "status_code": 200,
+      "api_version": "v2",
+      "atThreshold": true
+    }
+  }
+]

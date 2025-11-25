@@ -1,0 +1,187 @@
+{
+  "project": "Project_B_PostChange",
+  "api_version": "v2",
+  "timestamp": "2025-11-25T12:42:26.406866",
+  "execution_time_seconds": 21.01,
+  "total_tests": 6,
+  "passed": 5,
+  "failed": 1,
+  "pass_rate": 83.33,
+  "latency_stats": {
+    "avg_ms": 3500.85,
+    "p50_ms": 2070.95,
+    "p95_ms": 8682.48,
+    "p99_ms": 8682.48,
+    "min_ms": 2050.96,
+    "max_ms": 8682.48
+  },
+  "adapter_stats": {
+    "fallback_count": 2,
+    "retry_count": 1,
+    "circuit_breaker_state": "CLOSED",
+    "async_cases": 0
+  },
+  "test_results": [
+    {
+      "test_id": "TC001",
+      "test_name": "Normal case - Confirmed availability",
+      "passed": true,
+      "errors": [],
+      "result": {
+        "available": true,
+        "quantity": 12,
+        "note": "confirmed",
+        "status_code": 200,
+        "latency_ms": 2070.95,
+        "api_version": "v2",
+        "availabilityStatus": "confirmed",
+        "syncTimestamp": "2025-11-25T04:42:07.460756Z",
+        "requiresPolling": false,
+        "fallback": false
+      },
+      "expected": {
+        "available": true,
+        "quantity": 12,
+        "note": "confirmed"
+      },
+      "latency_ms": 2070.95,
+      "fallback": false,
+      "api_version": "v2"
+    },
+    {
+      "test_id": "TC002",
+      "test_name": "Boundary case - Zero quantity",
+      "passed": true,
+      "errors": [],
+      "result": {
+        "available": false,
+        "quantity": 0,
+        "note": "confirmed",
+        "status_code": 200,
+        "latency_ms": 2066.55,
+        "api_version": "v2",
+        "availabilityStatus": "confirmed",
+        "syncTimestamp": "2025-11-25T04:42:09.530701Z",
+        "requiresPolling": false,
+        "fallback": false
+      },
+      "expected": {
+        "available": false,
+        "quantity": 0,
+        "note": "confirmed"
+      },
+      "latency_ms": 2066.55,
+      "fallback": false,
+      "api_version": "v2"
+    },
+    {
+      "test_id": "TC003",
+      "test_name": "Asynchronous case - Pending availability",
+      "passed": true,
+      "errors": [],
+      "result": {
+        "available": true,
+        "quantity": 15,
+        "note": "pending_sync",
+        "status_code": 200,
+        "latency_ms": 2050.96,
+        "api_version": "v2",
+        "availabilityStatus": "pending",
+        "syncTimestamp": "2025-11-25T04:42:16.581160Z",
+        "requiresPolling": true,
+        "fallback": false,
+        "estimatedSyncTime": 5
+      },
+      "expected": {
+        "available": true,
+        "quantity": 15,
+        "note": "pending_sync",
+        "requiresPolling": true
+      },
+      "latency_ms": 2050.96,
+      "fallback": false,
+      "api_version": "v2"
+    },
+    {
+      "test_id": "TC004",
+      "test_name": "Invalid input - Missing regionId",
+      "passed": false,
+      "errors": [
+        "Status mismatch: expected 400, got 500"
+      ],
+      "result": {
+        "available": false,
+        "quantity": 0,
+        "note": "fallback_exception",
+        "status_code": 500,
+        "latency_ms": 4082.81,
+        "api_version": "v1",
+        "fallback": true,
+        "fallback_reason": "Missing required parameter: regionId",
+        "error": "HTTPConnectionPool(host='localhost', port=5001): Max retries exceeded with url: /api/v1/checkStock (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002571E8D90F0>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))"
+      },
+      "expected": {
+        "available": false,
+        "quantity": 0,
+        "note": "validation_error",
+        "fallback": true
+      },
+      "latency_ms": 4082.81,
+      "fallback": true,
+      "api_version": "v1"
+    },
+    {
+      "test_id": "TC005",
+      "test_name": "Error case - Service timeout",
+      "passed": true,
+      "errors": [],
+      "result": {
+        "available": false,
+        "quantity": 0,
+        "note": "fallback_exception",
+        "status_code": 500,
+        "latency_ms": 8682.48,
+        "api_version": "v1",
+        "fallback": true,
+        "fallback_reason": "Internal server error",
+        "error": "HTTPConnectionPool(host='localhost', port=5001): Max retries exceeded with url: /api/v1/checkStock (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x000002571E918D10>: Failed to establish a new connection: [WinError 10061] No connection could be made because the target machine actively refused it'))"
+      },
+      "expected": {
+        "available": false,
+        "quantity": 0,
+        "note": "service_error",
+        "fallback": true,
+        "retryable": true
+      },
+      "latency_ms": 8682.48,
+      "fallback": true,
+      "api_version": "v1"
+    },
+    {
+      "test_id": "TC006",
+      "test_name": "Boundary case - At reserve threshold",
+      "passed": true,
+      "errors": [],
+      "result": {
+        "available": true,
+        "quantity": 3,
+        "note": "confirmed_at_threshold",
+        "status_code": 200,
+        "latency_ms": 2051.33,
+        "api_version": "v2",
+        "availabilityStatus": "confirmed",
+        "syncTimestamp": "2025-11-25T04:42:26.402053Z",
+        "requiresPolling": false,
+        "fallback": false
+      },
+      "expected": {
+        "available": true,
+        "quantity": 3,
+        "note": "confirmed_at_threshold"
+      },
+      "latency_ms": 2051.33,
+      "fallback": false,
+      "api_version": "v2"
+    }
+  ]
+}
