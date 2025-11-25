@@ -1,0 +1,33 @@
+[
+  {
+    "name": "normal_confirmed",
+    "input": {"sku": "ABC123"},
+    "mode": "normal",
+    "expected_pre": {"status": "ok", "available": true}
+  },
+  {
+    "name": "boundary_zero",
+    "input": {"sku": "ZERO1"},
+    "mode": "zero",
+    "expected_pre": {"status": "ok", "available": false}
+  },
+  {
+    "name": "malformed_missing_sku",
+    "input": {},
+    "mode": "normal",
+    "expected_pre": {"status": "error", "available": null}
+  },
+  {
+    "name": "slow_timeout",
+    "input": {"sku": "SLOW1"},
+    "mode": "normal",
+    "delay": 2.0,
+    "expected_pre": {"status": "ok", "available": true}
+  },
+  {
+    "name": "server_error",
+    "input": {"sku": "ERR1"},
+    "mode": "error",
+    "expected_pre": {"status": "error", "available": null}
+  }
+]

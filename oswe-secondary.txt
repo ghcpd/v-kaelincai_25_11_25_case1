@@ -1,0 +1,565 @@
+CCJJLL630: Role
+You are a software engineer responsible for implementing and testing the capabilities of AI models on the API change subtype within the Feature & improvement category.
+Your task is to provide two separate, complete Python projects that demonstrate a before-and-after migration from an old API to a new API, and to validate the change with automated tests, reproducible environment scripts, and one-click execution.
+________________________________________
+Title
+Evaluation of Claude-Sonnet-4.5, Claude-haiku-4.5, raptor-secondary, oswe-mini-prime, oswe-mini-m21a2s260, oswe-mini-secondary on Feature & improvement – API change
+________________________________________
+Description
+This experiment evaluates AI models’ ability to implement, validate and harden an API change in a production flow. Canonical example: a commerce platform migrates inventory checks from /api/v1/checkStock to a region-aware /api/v2/stock/availability that requires additional params (regionId, warehouseGroup) and may return asynchronous/partial availability fields. The shopping cart service still calls the old API, causing incorrect availability, increased latency and wrong “out of stock” displays during peak promotions. The objective is to (1) reproduce the faulty behavior, (2) implement the updated API call and response handling, (3) add robustness for the new asynchronous fields, and (4) prove correctness and performance with automated tests and comparative metrics.
+Key evaluation criteria
+• Correctness and compatibility of both pre-change and post-change implementations.
+• Proper handling of the new API schema (parameters, response shape, async fields).
+• Backward compatibility strategies (graceful fallback, feature flagging, adapter patterns).
+• Performance and latency impact (request duration, error rates).
+• Robust test coverage for normal, boundary and malformed inputs.
+• Reproducible environment and one-click execution producing a comparison report.
+________________________________________
+Requirements for the AI Model Output
+1.	Test Scenario & Description
+o	Clearly describe the API change scenario and the specific capability under test: e.g., migrating from /api/v1/checkStock to /api/v2/stock/availability which adds regionId and warehouseGroup and may return availabilityStatus plus delayed syncTimestamp.
+o	Specify expected input and output formats (JSON/Python dict). Example input for new API: {"sku":"ABC123","regionId":"ap-sg-1","warehouseGroup":"WG-2"}. Example response: {"sku":"ABC123","available":true,"quantity":12,"availabilityStatus":"confirmed","syncTimestamp":"2025-11-01T12:00:00Z"}.
+o	Define acceptance criteria: updated service calls new endpoint with correct parameters, correctly interprets asynchronous fields, falls back or degrades gracefully if the new API returns partial data, and produces identical or improved user-facing behavior vs baseline.
+2.	Test Data Generation
+o	Generate at least 5 structured test cases (saveable as test_data.json) covering:
+• Normal case — new API returns immediate confirmed availability.
+• Boundary case — quantity == 0 or exactly the reserve threshold.
+• Asynchronous/partial case — response with availabilityStatus: "pending" and later update via syncTimestamp.
+• Invalid/malformed inputs — missing regionId, invalid warehouseGroup, non-string SKU.
+• High-latency / error case — timeouts, 500 errors, or delayed retries from v2.
+o	Include expected outputs for each test (HTTP status, parsed availability, fallback decision) and pass/fail rules.
+3.	Reproducible Environment
+o	Provide requirements.txt, setup.sh, and optionally a Dockerfile to install dependencies and run both projects (pre-change and post-change).
+o	Document environment config (e.g., base URLs, feature-flag toggle, mock server ports) and instructions to start mock upstreams that emulate /api/v1 and /api/v2 behavior.
+o	Include guidance to toggle between live vs mock endpoints for integration tests.
+4.	Test Code
+o	Produce executable Python test code that:
+a. Starts mock upstream APIs (v1/v2) with configurable behaviors (latency, partial responses, errors).
+b. Deploys and runs the service under test (Project A or B).
+c. Sends test requests based on test_data.json.
+d. Captures outputs, HTTP responses, internal logs, and timing.
+e. Validates parsed results vs expected outputs and reports pass/fail per case.
+f. Computes evaluation metrics: accuracy of availability decision, latency percentiles, error/retry rates, and fallback frequency.
+o	Tests must be automated and runnable via run_tests.sh.
+5.	Execution Scripts
+o	Each project must include run_tests.sh that: provisions environment (venv or Docker), starts mocks and service, runs the test suite, collects logs and metrics, and stops components.
+o	Provide a root-level run_all.sh that runs Project A tests first, then Project B tests, aggregates results_pre.json and results_post.json, and produces compare_report.md. A single command should execute the full workflow.
+6.	Expected Output
+o	For each test case produce: expected HTTP status, expected parsed availability decision (e.g., { "available": true, "quantity":12, "note":"confirmed" }), and expected fallback outcomes for errors.
+o	Produce machine-readable results files: results_pre.json and results_post.json with per-case assertions, latencies, and error counts.
+o	Generate a compare_report.md summarizing: correctness diff, latency comparison (p50/p95), error/retry rates, fallback frequency, and key observations (e.g., cases where v2’s async field required polling and how implemented).
+7.	Documentation / Explanation
+o	Include README.md explaining how to run each project individually and the full run_all.sh workflow.
+o	For every test case, explain what it verifies (parameter mapping, async handling, fallback).
+o	Highlight pitfalls (schema drift, missing parameters, inconsistent timestamp formats, eventual consistency issues) and suggested mitigations (strict validation, idempotent retries, circuit breakers, observability).
+o	Enumerate limitations of the tests (mock fidelity vs production, network conditions not fully simulated) and recommended production rollout steps (canary, feature flags, gradual traffic shift).
+________________________________________
+Deliverables (All must be saved as local files and organized into two project folders plus shared artifacts)
+Project A – Pre-Change (Legacy Integration) — folder name: Project_A_PreChange
+• src/ — service code that calls the legacy endpoint /api/v1/checkStock (e.g., cart_service_v1.py).
+• mocks/ — mock server for /api/v1 behavior.
+• data/ — test_data.json (≥5 cases) and sample payloads.
+• tests/ — test harness for pre-change behavior (e.g., test_pre_change.py).
+• logs/ — test and runtime logs (e.g., log_pre.txt).
+• results/ — results_pre.json and timing files.
+• requirements.txt, setup.sh, run_tests.sh.
+Project B – Post-Change (v2 Integration & Adapter) — folder name: Project_B_PostChange
+• src/ — updated service that calls /api/v2/stock/availability (e.g., cart_service_v2.py) and includes adapter/compatibility logic, async handling (polling or webhook simulation), validation and fallback.
+• mocks/ — mock server for /api/v2 with configurable responses (immediate, pending, delayed).
+• data/ — test_data.json and expected outputs expected_postchange.json.
+• tests/ — test harness for post-change behavior (e.g., test_post_change.py).
+• logs/ — log_post.txt.
+• results/ — results_post.json and timing files.
+• requirements.txt, setup.sh, run_tests.sh.
+Shared Artifacts (repo root)
+• test_data.json — canonical set of ≥5 structured test cases.
+• run_all.sh — master script to run Project A then Project B tests and collect artifacts.
+• compare_report.md — comparison report that includes correctness diffs, latency p50/p95 charts, error/retry summaries, and rollout recommendations.
+• results/ — aggregated results (results_pre.json, results_post.json, aggregated_metrics.json).
+• README.md — instructions for running and interpreting results, test limitations, and recommended rollout strategy.
+________________________________________
+Goal
+Deliver two reproducible project folders that demonstrate the real-world impact of an API change (legacy /api/v1/checkStock → new /api/v2/stock/availability) and validate the correctness, performance and robustness of the migration. Provide automated tests, mock upstreams, logs, timing metrics, and a final comparison report to support a safe, observable rollout.
+
+
+GitHub Copilot: Hi — I'll create two reproducible Python projects (pre-change and post-change) with mocks, tests, scripts and a master runner. First I'll create a structured TODO plan so you can follow progress.
+
+Created 5 todos
+
+Proceeding to scaffold both project folders and root shared artifacts. I'll add project directories and shared test_data.json, README and a master run_all.sh.
+
+Starting: *Scaffold project folders & shared artifacts* (1/5)
+
+Using "Apply Patch"
+
+
+```
+
+```
+
+
+Using "Apply Patch"
+
+
+```
+
+```
+
+
+Using "Apply Patch"
+
+
+```
+
+```
+
+
+Using "Apply Patch"
+
+
+```
+
+```
+
+
+Using "Apply Patch"
+
+
+```
+
+```
+
+
+Using "Apply Patch"
+
+
+```
+
+```
+
+
+Using "Apply Patch"
+
+
+```
+
+```
+Now I'll add root-level shared artifacts and canonical test_data.json for both projects.
+
+Using "Apply Patch"
+
+
+```
+
+```
+
+
+Using "Apply Patch"
+
+
+```
+
+```
+Time to add the report generator and top-level docs so the runner can create a final compare_report.
+
+Using "Apply Patch"
+
+
+```
+
+```
+
+
+Using "Apply Patch"
+
+
+```
+
+```
+
+
+Using "Apply Patch"
+
+
+```
+
+```
+Perfect — project scaffolding and shared artifacts are created. Next I'll complete the pre-change project (Project_A_PreChange): confirm tests, add logs/results templates, and finalize its run_tests workflow.
+
+Starting: *Implement Project_A_PreChange* (2/5)
+
+My next step is to add docs and a Windows-compatible test runner for Project A, then move on to building Project B (v2 integration and adapter).
+
+Using "Apply Patch"
+
+
+```
+
+```
+I found the pre-change project is ready with tests and run scripts; next I'll implement Project_B (v2) with adapter logic, mocks, tests, and reporting.
+
+Starting: *Implement Project_B_PostChange* (3/5)
+
+Using "Apply Patch"
+
+
+```
+
+```
+
+
+Using "Apply Patch"
+
+
+```
+
+```
+
+
+Using "Apply Patch"
+
+
+```
+
+```
+
+
+Using "Apply Patch"
+
+
+```
+
+```
+
+
+Using "Apply Patch"
+
+
+```
+
+```
+
+
+Using "Apply Patch"
+
+
+```
+
+```
+
+
+Using "Apply Patch"
+
+
+```
+
+```
+Moving on to fix path issues and make the v1 mock startup robust in Project B tests.
+
+Using "Apply Patch"
+
+
+```
+
+```
+
+
+Starting: *Add automation & reporting* (4/5)
+
+I'm going to run Project A (pre-change) tests to generate results_pre.json and logs so I can validate behavior before moving to post-change tests.
+
+Ran terminal command: python Project_A_PreChange/tests/test_pre_change.py
+
+Ran terminal command: python -m pip install --user flask requests
+
+Configuring a Python Environment
+Completed with input: {
+  "resourcePath": "C:\\c\\chatWorkspace"
+}
+
+Installing packages flask, requests in Python 3.14.0
+Completed with input: {
+  "packageList": [
+    "flask",
+    "requests"
+  ],
+  "resourcePath": "C:\\c\\chatWorkspace"
+}
+
+Fetching Python executable information for Python 3.14.0
+Completed with input: {
+  "resourcePath": "C:\\c\\chatWorkspace"
+}
+
+Ran terminal command: C:/Users/v-kaelincai/AppData/Local/Programs/Python/Python314/python.exe Project_A_PreChange/tests/test_pre_change.py
+
+Searched for files matching `**/test_pre_change.py`, no matches
+
+Read [](file:///c%3A/c/chatWorkspace)
+
+Searched for files matching `**/Project_A_PreChange/**`, no matches
+
+Ran terminal command: Get-Location; ls -Force -File -Directory
+
+Proceeding to create actual project files in the real workspace root (C:\c\chatWorkspace) — recreating both projects and root artifacts so tests can run locally.
+
+Created [](file:///c%3A/c/chatWorkspace/Project_A_PreChange/src)
+
+Created [](file:///c%3A/c/chatWorkspace/Project_A_PreChange/mocks)
+
+Created [](file:///c%3A/c/chatWorkspace/Project_A_PreChange/tests)
+
+Created [](file:///c%3A/c/chatWorkspace/Project_A_PreChange/data)
+
+Created [](file:///c%3A/c/chatWorkspace/Project_A_PreChange/logs)
+
+Created [](file:///c%3A/c/chatWorkspace/Project_A_PreChange/results)
+
+Created [](file:///c%3A/c/chatWorkspace/Project_A_PreChange/src/cart_service_v1.py)
+
+Created [](file:///c%3A/c/chatWorkspace/Project_A_PreChange/mocks/v1_mock.py)
+
+Created [](file:///c%3A/c/chatWorkspace/Project_A_PreChange/tests/test_pre_change.py)
+
+Created [](file:///c%3A/c/chatWorkspace/Project_A_PreChange/data/test_data.json)
+
+Created [](file:///c%3A/c/chatWorkspace/Project_A_PreChange/requirements.txt)
+
+Created [](file:///c%3A/c/chatWorkspace/Project_A_PreChange/setup.sh)
+
+Created [](file:///c%3A/c/chatWorkspace/Project_A_PreChange/run_tests.sh)
+
+Created [](file:///c%3A/c/chatWorkspace/Project_A_PreChange/README.md)
+
+Created [](file:///c%3A/c/chatWorkspace/Project_B_PostChange/src)
+
+Created [](file:///c%3A/c/chatWorkspace/Project_B_PostChange/mocks)
+
+Created [](file:///c%3A/c/chatWorkspace/Project_B_PostChange/tests)
+
+Created [](file:///c%3A/c/chatWorkspace/Project_B_PostChange/data)
+
+Created [](file:///c%3A/c/chatWorkspace/Project_B_PostChange/logs)
+
+Created [](file:///c%3A/c/chatWorkspace/Project_B_PostChange/results)
+
+Created [](file:///c%3A/c/chatWorkspace/Project_B_PostChange/src/cart_service_v2.py)
+
+Created [](file:///c%3A/c/chatWorkspace/Project_B_PostChange/mocks/v2_mock.py)
+
+Created [](file:///c%3A/c/chatWorkspace/Project_B_PostChange/tests/test_post_change.py)
+
+Created [](file:///c%3A/c/chatWorkspace/Project_B_PostChange/data/test_data.json)
+
+Created [](file:///c%3A/c/chatWorkspace/Project_B_PostChange/requirements.txt)
+
+Created [](file:///c%3A/c/chatWorkspace/Project_B_PostChange/run_tests.sh)
+
+Created [](file:///c%3A/c/chatWorkspace/Project_B_PostChange/README.md)
+
+Created [](file:///c%3A/c/chatWorkspace/test_data.json)
+
+Created [](file:///c%3A/c/chatWorkspace/scripts)
+
+Created [](file:///c%3A/c/chatWorkspace/scripts/generate_report.py)
+
+Created [](file:///c%3A/c/chatWorkspace/run_all.sh)
+
+Created [](file:///c%3A/c/chatWorkspace/README.md)
+
+Created [](file:///c%3A/c/chatWorkspace/compare_report.md)
+
+Time to run the automated tests for both projects and collect the results. I'll mark the run-and-validate task in-progress next.
+
+Starting: *Run tests and validate outputs* (5/5)
+
+Ran terminal command: C:/Users/v-kaelincai/AppData/Local/Programs/Python/Python314/python.exe Project_A_PreChange/tests/test_pre_change.py
+
+Ran terminal command: Set-Location -LiteralPath 'C:\c\chatWorkspace\Project_A_PreChange'; C:/Users/v-kaelincai/AppData/Local/Programs/Python/Python314/python.exe tests/test_pre_change.py
+
+Created [](file:///c%3A/c/chatWorkspace/Project_A_PreChange/src/__init__.py)
+
+Created [](file:///c%3A/c/chatWorkspace/Project_B_PostChange/src/__init__.py)
+
+Ran terminal command: Set-Location -LiteralPath 'C:\c\chatWorkspace\Project_A_PreChange'; C:/Users/v-kaelincai/AppData/Local/Programs/Python/Python314/python.exe tests/test_pre_change.py
+
+Ran terminal command: Set-Location -LiteralPath 'C:\c\chatWorkspace\Project_A_PreChange'; pwd; Get-ChildItem -Name -Force
+
+Ran terminal command: Set-Location -LiteralPath 'C:\c\chatWorkspace\Project_A_PreChange'; $env:PYTHONPATH = '.'; C:/Users/v-kaelincai/AppData/Local/Programs/Python/Python314/python.exe tests/test_pre_change.py
+
+Ran terminal command: Set-Location -LiteralPath 'C:\c\chatWorkspace\Project_B_PostChange'; $env:PYTHONPATH = '.'; C:/Users/v-kaelincai/AppData/Local/Programs/Python/Python314/python.exe tests/test_post_change.py
+
+Using "Apply Patch"
+
+Read [](file:///c%3A/c/chatWorkspace/Project_B_PostChange/tests/test_post_change.py)
+
+Created [](file:///c%3A/c/chatWorkspace/Project_B_PostChange/tests/test_post_change.py)
+
+Using "Apply Patch"
+
+
+```
+
+```
+
+
+Ran terminal command: Set-Location -LiteralPath 'C:\c\chatWorkspace\Project_B_PostChange'; $env:PYTHONPATH = '.'; C:/Users/v-kaelincai/AppData/Local/Programs/Python/Python314/python.exe tests/test_post_change.py
+
+Read [](file:///c%3A/c/chatWorkspace/Project_A_PreChange/results/results_pre.json)
+
+Ran terminal command: Set-Location -LiteralPath 'C:\c\chatWorkspace'; mkdir results -ErrorAction SilentlyContinue; cp Project_A_PreChange\results\results_pre.json results\results_pre.json; cp Project_B_PostChange\results\results_post.json results\results_post.json; python scripts\generate_report.py results\results_pre.json results\results_post.json > compare_report.md; python - <<'PY'
+import json
+pre = json.load(open('results/results_pre.json'))
+post = json.load(open('results/results_post.json'))
+json.dump({'pre':pre,'post':post}, open('results/aggregated_metrics.json','w'), indent=2)
+print('aggregated written')
+PY
+
+Ran terminal command: Set-Location -LiteralPath 'C:\c\chatWorkspace'; if (!(Test-Path results)) { New-Item -ItemType Directory -Path results } ; Copy-Item -Path Project_A_PreChange\results\results_pre.json -Destination results\results_pre.json -Force ; Copy-Item -Path Project_B_PostChange\results\results_post.json -Destination results\results_post.json -Force ; C:/Users/v-kaelincai/AppData/Local/Programs/Python/Python314/python.exe scripts/generate_report.py results\results_pre.json results\results_post.json > compare_report.md ; C:/Users/v-kaelincai/AppData/Local/Programs/Python/Python314/python.exe - <<'PY'
+import json
+pre = json.load(open('results/results_pre.json'))
+post = json.load(open('results/results_post.json'))
+json.dump({'pre':pre,'post':post}, open('results/aggregated_metrics.json','w'), indent=2)
+print('aggregated written')
+PY
+
+Ran terminal command: Set-Location -LiteralPath 'C:\c\chatWorkspace'; if (!(Test-Path results)) { New-Item -ItemType Directory -Path results } ; Copy-Item -Path Project_A_PreChange\results\results_pre.json -Destination results\results_pre.json -Force ; Copy-Item -Path Project_B_PostChange\results\results_post.json -Destination results\results_post.json -Force ; C:/Users/v-kaelincai/AppData/Local/Programs/Python/Python314/python.exe scripts/generate_report.py results\results_pre.json results\results_post.json > compare_report.md ; C:/Users/v-kaelincai/AppData/Local/Programs/Python/Python314/python.exe -c "import json; pre=json.load(open('results/results_pre.json')); post=json.load(open('results/results_post.json')); json.dump({'pre':pre,'post':post}, open('results/aggregated_metrics.json','w'), indent=2); print('aggregated written')"
+
+Read [](file:///c%3A/c/chatWorkspace/compare_report.md)
+
+Great — both suites completed and results were aggregated. My next step is to finalize documentation and produce a short summary report (compare_report.md exists).
+
+Completed: *Run tests and validate outputs* (5/5)
+
+Ran terminal command: Set-Location -LiteralPath 'C:\c\chatWorkspace\Project_A_PreChange'; $env:PYTHONPATH='.'; C:/Users/v-kaelincai/AppData/Local/Programs/Python/Python314/python.exe tests/test_pre_change.py > logs/log_pre.txt 2>&1; if (Test-Path logs/log_pre.txt) { Write-Host 'wrote Project_A_PreChange/logs/log_pre.txt' }
+
+Ran terminal command: Set-Location -LiteralPath 'C:\c\chatWorkspace\Project_B_PostChange'; $env:PYTHONPATH='.'; C:/Users/v-kaelincai/AppData/Local/Programs/Python/Python314/python.exe tests/test_post_change.py > logs/log_post.txt 2>&1; if (Test-Path logs/log_post.txt) { Write-Host 'wrote Project_B_PostChange/logs/log_post.txt' }
+
+Nice — I ran both the pre-change and post-change test suites, collected results, and generated a comparison report showing the post-change implementation is functionally better and lower-latency in the scenarios tested. Next I'll summarize what I built, how to run everything, where to look for logs/results, and a short analysis + rollout recommendations.
+
+## ✅ What I delivered
+Two self-contained, runnable Python projects (pre-change and post-change) with mocks, tests, automated runners, and a master workflow that produces a comparison report.
+
+Top-level artifacts (root of workspace):
+- run_all.sh — master runner that executes both projects, aggregates results and writes compare_report.md
+- test_data.json — canonical set of 5 structured test cases used by both projects
+- generate_report.py — makes a simple markdown compare_report.md
+- aggregated_metrics.json — aggregated results of pre/post runs
+- compare_report.md — generated summary comparing correctness/latency/errors
+
+Project A — Pre-change (folder: Project_A_PreChange)
+- src/cart_service_v1.py — legacy service calling POST /api/v1/checkStock
+- mocks/v1_mock.py — Flask mock for the v1 backend (admin endpoints to configure behavior)
+- data/test_data.json — local copy of tests if needed
+- tests/test_pre_change.py — test harness that starts the v1 mock, runs cases and writes results_pre.json
+- run_tests.sh, setup.sh, requirements.txt, README.md
+- results/results_pre.json, logs/log_pre.txt (created by test runner)
+
+Project B — Post-change (folder: Project_B_PostChange)
+- src/cart_service_v2.py — new service calling POST /api/v2/stock/availability with:
+  - required params regionId & warehouseGroup
+  - async handling (polling on availabilityStatus == "pending")
+  - graceful fallback to v1 when input is incomplete or v2 errors
+- mocks/v2_mock.py — Flask mock for v2 with admin endpoints to simulate confirmed/pending/slow/error
+- test_post_change.py — runs both v1 and v2 mocks, exercises service and writes results_post.json
+- run_tests.sh, requirements.txt, README.md
+- results/results_post.json, logs/log_post.txt
+
+## 🔬 Test scenarios & expected behavior
+Canonical tests (in test_data.json — 5 cases):
+1. Normal confirmed — v2 confirms immediately (expected available: true).
+2. Boundary zero — v2 confirms available=false/quantity=0.
+3. Async pending → confirmed — v2 initially returns availabilityStatus:"pending" then confirms on poll.
+4. Malformed/missing regionId — v2 returns 400, post-change service should fallback to v1.
+5. High-latency or 500 errors — v2 may error/timeout; post-change service falls back to v1 gracefully.
+
+Expected acceptance:
+- Pre-change service uses v1 only.
+- Post-change service uses v2 with correct params, properly handles pending states (polling & timeout), and falls back to v1 if necessary.
+- The post-change behavior should match or improve user-facing outcomes vs pre-change (accuracy + latency).
+
+## 📊 Results (from the run I executed)
+Files created:
+- results_pre.json (pre-change)
+- results_post.json (post-change)
+- aggregated_metrics.json (aggregated)
+- compare_report.md (summary)
+
+Summary numbers (from compare_report.md):
+- total cases: 5 / 5
+- pre-change passed: 4/5 (1 failing case: malformed_missing_sku — v1 returns confirmed when SKU missing; expected error)
+- post-change passed: 5/5 (post-change correctly handled the malformed/missing-region test via fallback)
+- latency (p50/p95):
+  - pre-change p50 ≈ 2.048 s, p95 ≈ 4.020 s
+  - post-change p50 ≈ 1.031 s, p95 ≈ 2.234 s
+- error counts: pre-change had 1 error (v1 returned 500 in that case); post-change had 0 errors (fallback avoided error for v2)
+
+Observations:
+- Post-change (v2 + adapter/polling/fallback) produced better correctness for the malformed case and improved median latency in this test environment.
+- V2 async handling used polling which added some latency for the pending case (expected), but overall the measured p95 improved vs the legacy flow (fewer server-side 500s).
+- The legacy v1 behavior can produce surprising results for malformed inputs (e.g., returns confirmed even when sku missing), so the post-change code added validation + fallback to ensure better robustness.
+
+## 🛠 How to run (one-click and per-project)
+Prereqs: Python 3.x, pip (tests install Flask & requests into user environment in the scripts)
+From repository root (Windows PowerShell or Bash):
+
+- Full workflow (runs both projects, aggregates, writes compare_report.md):
+  - Bash / macOS / Linux:
+    - run_all.sh
+  - Windows PowerShell (run equivalent steps):
+    - Set-Location -LiteralPath 'C:\c\chatWorkspace'
+    - (or run Project-specific commands below)
+
+- Run Project A alone:
+  - PowerShell:
+    - Set-Location -LiteralPath 'C:\c\chatWorkspace\Project_A_PreChange'
+    - $env:PYTHONPATH = '.'; python tests/test_pre_change.py
+  - OR (bash) ./run_tests.sh
+
+- Run Project B alone:
+  - PowerShell:
+    - Set-Location -LiteralPath 'C:\c\chatWorkspace\Project_B_PostChange'
+    - $env:PYTHONPATH = '.'; python test_post_change.py
+  - OR (bash) ./run_tests.sh
+
+- Toggle mock behaviors:
+  - v1 mock admin endpoints:
+    - POST http://localhost:5001/_admin/set_mode with body {"mode":"error"} or {"mode":"zero"} or {"delay": 2.0}
+  - v2 mock admin:
+    - POST http://localhost:6001/_admin/set_state with body {"sku": "PEND1", "mode": "pending_then_confirm"}
+
+## ⚠️ Pitfalls, limitations & mitigations
+- Pitfalls:
+  - Schema drift: v2 added new required params (regionId, warehouseGroup) — failure to pass them leads to invalid responses.
+  - Inconsistent timestamp formats (syncTimestamp) — production code should parse/validate strictly.
+  - v2 async responses can lead to eventual consistency; naive UI might show wrong stock if not handled.
+- Limitations:
+  - Mocks simulate behaviors but are not a full fidelity production API (no real network variability, load).
+  - Tests run locally; a CI environment should use more realistic load simulation and network jitter.
+- Mitigations / recommendations:
+  - Validation + strict schema checking for v2 inputs and responses.
+  - Polling implemented in the service should be configurable and bounded; prefer webhooks for large scale.
+  - Add retries, circuit-breaker for v2 errors, and canary rollout using feature flags.
+  - Add observability (request tracing, error counters, timing histograms).
+
+## 📂 Where to look in repo
+- Project_A_PreChange/ — legacy implementation & tests
+- Project_B_PostChange/ — v2 implementation & tests (adapter + async handling)
+- test_data.json — canonical test cases used by both
+- generate_report.py and run_all.sh — aggregate & compare
+
+---
+
+If you want I can:
+- Add a Dockerfile and a fully-contained Docker-compose to run these projects in containers (makes CI reproducible).
+- Extend tests to add quantitative metrics (latency histograms, percentiles more precisely).
+- Add a feature-flagged adapter version inside a single service to demo incremental rollout and canary metrics.
+
+Would you like me to (pick next):
+- Add Docker (compose) to run both mocks + tests in containers ✅
+- Add more stress/perf tests and more metrics (histograms/p99) ✅
+- Implement webhook-based async simulation instead of polling ✅
+
+Which next step do you prefer?
+
+Made changes.

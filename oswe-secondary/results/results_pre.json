@@ -1,0 +1,79 @@
+[
+  {
+    "case": "normal_confirmed",
+    "status": "ok",
+    "output": {
+      "sku": "ABC123",
+      "available": true,
+      "quantity": 12,
+      "note": "v1_confirmed"
+    },
+    "expected": {
+      "status": "ok",
+      "available": true
+    },
+    "elapsed": 2.048475742340088,
+    "passed": true
+  },
+  {
+    "case": "boundary_zero",
+    "status": "ok",
+    "output": {
+      "sku": "ZERO1",
+      "available": false,
+      "quantity": 0,
+      "note": "v1_zero"
+    },
+    "expected": {
+      "status": "ok",
+      "available": false
+    },
+    "elapsed": 2.0452733039855957,
+    "passed": true
+  },
+  {
+    "case": "malformed_missing_sku",
+    "status": "ok",
+    "output": {
+      "sku": null,
+      "available": true,
+      "quantity": 12,
+      "note": "v1_confirmed"
+    },
+    "expected": {
+      "status": "error",
+      "available": null
+    },
+    "elapsed": 2.0483176708221436,
+    "passed": false
+  },
+  {
+    "case": "slow_timeout",
+    "status": "ok",
+    "output": {
+      "sku": "SLOW1",
+      "available": true,
+      "quantity": 12,
+      "note": "v1_confirmed"
+    },
+    "expected": {
+      "status": "ok",
+      "available": true
+    },
+    "elapsed": 4.019566059112549,
+    "passed": true
+  },
+  {
+    "case": "server_error",
+    "status": "error",
+    "output": {
+      "error": "500 Server Error: INTERNAL SERVER ERROR for url: http://localhost:5001/api/v1/checkStock"
+    },
+    "expected": {
+      "status": "error",
+      "available": null
+    },
+    "elapsed": 2.041677236557007,
+    "passed": true
+  }
+]

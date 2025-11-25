@@ -1,0 +1,37 @@
+[
+  {
+    "name": "normal_confirmed",
+    "input": {"sku": "ABC123", "regionId": "ap-sg-1", "warehouseGroup": "WG-2"},
+    "mode_v1": "normal",
+    "mode_v2": "confirmed",
+    "expected_post": {"status": "ok", "available": true, "note": "confirmed"}
+  },
+  {
+    "name": "boundary_zero",
+    "input": {"sku": "ZERO1", "regionId": "us-east-1", "warehouseGroup": "main"},
+    "mode_v1": "zero",
+    "mode_v2": "confirmed_zero",
+    "expected_post": {"status": "ok", "available": false, "note": "confirmed"}
+  },
+  {
+    "name": "async_pending_then_confirm",
+    "input": {"sku": "PEND1", "regionId": "eu-w1", "warehouseGroup": "WG-async"},
+    "mode_v1": "normal",
+    "mode_v2": "pending_then_confirm",
+    "expected_post": {"status": "ok", "available": true, "note": "confirmed_after_poll"}
+  },
+  {
+    "name": "malformed_missing_region",
+    "input": {"sku": "BAD1"},
+    "mode_v1": "normal",
+    "mode_v2": "bad_input",
+    "expected_post": {"status": "fallback", "available": true, "note": "used_v1_fallback"}
+  },
+  {
+    "name": "high_latency_error",
+    "input": {"sku": "SLOW1", "regionId": "ap-sg-1", "warehouseGroup": "WG-2"},
+    "mode_v1": "normal",
+    "mode_v2": "error_or_slow",
+    "expected_post": {"status": "fallback", "available": true, "note": "v2_error_fallback"}
+  }
+]
