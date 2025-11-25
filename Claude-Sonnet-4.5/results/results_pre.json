@@ -1,0 +1,147 @@
+{
+  "project": "Project_A_PreChange",
+  "api_version": "v1",
+  "timestamp": "2025-11-25T10:35:28.706232",
+  "execution_time_seconds": 12.31,
+  "total_tests": 6,
+  "passed": 5,
+  "failed": 1,
+  "pass_rate": 83.33,
+  "latency_stats": {
+    "avg_ms": 2049.83,
+    "p50_ms": 2042.59,
+    "p95_ms": 2087.17,
+    "p99_ms": 2087.17,
+    "min_ms": 2032.13,
+    "max_ms": 2087.17
+  },
+  "test_results": [
+    {
+      "test_id": "TC001",
+      "test_name": "Normal case - Confirmed availability",
+      "passed": true,
+      "errors": [],
+      "result": {
+        "available": true,
+        "quantity": 12,
+        "note": "confirmed",
+        "status_code": 200,
+        "latency_ms": 2087.17,
+        "api_version": "v1"
+      },
+      "expected": {
+        "available": true,
+        "quantity": 12,
+        "note": "confirmed"
+      },
+      "latency_ms": 2087.17
+    },
+    {
+      "test_id": "TC002",
+      "test_name": "Boundary case - Zero quantity",
+      "passed": true,
+      "errors": [],
+      "result": {
+        "available": false,
+        "quantity": 0,
+        "note": "confirmed",
+        "status_code": 200,
+        "latency_ms": 2032.13,
+        "api_version": "v1"
+      },
+      "expected": {
+        "available": false,
+        "quantity": 0,
+        "note": "confirmed"
+      },
+      "latency_ms": 2032.13
+    },
+    {
+      "test_id": "TC003",
+      "test_name": "Asynchronous case - Pending availability",
+      "passed": true,
+      "errors": [],
+      "result": {
+        "available": true,
+        "quantity": 15,
+        "note": "confirmed",
+        "status_code": 200,
+        "latency_ms": 2041.01,
+        "api_version": "v1"
+      },
+      "expected": {
+        "available": true,
+        "quantity": 15,
+        "note": "pending_sync",
+        "requiresPolling": true
+      },
+      "latency_ms": 2041.01
+    },
+    {
+      "test_id": "TC004",
+      "test_name": "Invalid input - Missing regionId",
+      "passed": false,
+      "errors": [
+        "Status mismatch: expected 400, got 200"
+      ],
+      "result": {
+        "available": true,
+        "quantity": 8,
+        "note": "confirmed",
+        "status_code": 200,
+        "latency_ms": 2034.94,
+        "api_version": "v1"
+      },
+      "expected": {
+        "available": false,
+        "quantity": 0,
+        "note": "validation_error",
+        "fallback": true
+      },
+      "latency_ms": 2034.94
+    },
+    {
+      "test_id": "TC005",
+      "test_name": "Error case - Service timeout",
+      "passed": true,
+      "errors": [],
+      "result": {
+        "available": false,
+        "quantity": 0,
+        "note": "api_error",
+        "status_code": 500,
+        "latency_ms": 2042.59,
+        "api_version": "v1",
+        "error": "{\"code\":\"SERVER_ERROR\",\"error\":\"Internal server error\"}\n"
+      },
+      "expected": {
+        "available": false,
+        "quantity": 0,
+        "note": "service_error",
+        "fallback": true,
+        "retryable": true
+      },
+      "latency_ms": 2042.59
+    },
+    {
+      "test_id": "TC006",
+      "test_name": "Boundary case - At reserve threshold",
+      "passed": true,
+      "errors": [],
+      "result": {
+        "available": true,
+        "quantity": 3,
+        "note": "confirmed",
+        "status_code": 200,
+        "latency_ms": 2061.16,
+        "api_version": "v1"
+      },
+      "expected": {
+        "available": true,
+        "quantity": 3,
+        "note": "confirmed_at_threshold"
+      },
+      "latency_ms": 2061.16
+    }
+  ]
+}

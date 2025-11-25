@@ -1,0 +1,183 @@
+[
+  {
+    "test_id": "TC001",
+    "name": "Normal case - Confirmed availability",
+    "description": "New API returns immediate confirmed availability with sufficient stock",
+    "input": {
+      "sku": "ABC123",
+      "regionId": "ap-sg-1",
+      "warehouseGroup": "WG-2",
+      "quantity": 5
+    },
+    "expected_v1_response": {
+      "sku": "ABC123",
+      "available": true,
+      "stock": 12
+    },
+    "expected_v2_response": {
+      "sku": "ABC123",
+      "available": true,
+      "quantity": 12,
+      "availabilityStatus": "confirmed",
+      "syncTimestamp": "2025-11-25T12:00:00Z",
+      "regionId": "ap-sg-1",
+      "warehouseGroup": "WG-2"
+    },
+    "expected_outcome": {
+      "available": true,
+      "quantity": 12,
+      "note": "confirmed"
+    },
+    "expected_status": 200
+  },
+  {
+    "test_id": "TC002",
+    "name": "Boundary case - Zero quantity",
+    "description": "Stock exactly at zero, should return unavailable",
+    "input": {
+      "sku": "XYZ789",
+      "regionId": "us-east-1",
+      "warehouseGroup": "WG-1",
+      "quantity": 1
+    },
+    "expected_v1_response": {
+      "sku": "XYZ789",
+      "available": false,
+      "stock": 0
+    },
+    "expected_v2_response": {
+      "sku": "XYZ789",
+      "available": false,
+      "quantity": 0,
+      "availabilityStatus": "confirmed",
+      "syncTimestamp": "2025-11-25T12:00:00Z",
+      "regionId": "us-east-1",
+      "warehouseGroup": "WG-1"
+    },
+    "expected_outcome": {
+      "available": false,
+      "quantity": 0,
+      "note": "confirmed"
+    },
+    "expected_status": 200
+  },
+  {
+    "test_id": "TC003",
+    "name": "Asynchronous case - Pending availability",
+    "description": "New API returns pending status requiring later sync check",
+    "input": {
+      "sku": "DEF456",
+      "regionId": "eu-west-1",
+      "warehouseGroup": "WG-3",
+      "quantity": 10
+    },
+    "expected_v1_response": {
+      "sku": "DEF456",
+      "available": true,
+      "stock": 15
+    },
+    "expected_v2_response": {
+      "sku": "DEF456",
+      "available": true,
+      "quantity": 15,
+      "availabilityStatus": "pending",
+      "syncTimestamp": "2025-11-25T12:05:00Z",
+      "regionId": "eu-west-1",
+      "warehouseGroup": "WG-3",
+      "estimatedSyncTime": 5
+    },
+    "expected_outcome": {
+      "available": true,
+      "quantity": 15,
+      "note": "pending_sync",
+      "requiresPolling": true
+    },
+    "expected_status": 200
+  },
+  {
+    "test_id": "TC004",
+    "name": "Invalid input - Missing regionId",
+    "description": "Missing required parameter regionId in v2 API call",
+    "input": {
+      "sku": "GHI999",
+      "warehouseGroup": "WG-1",
+      "quantity": 3
+    },
+    "expected_v1_response": {
+      "sku": "GHI999",
+      "available": true,
+      "stock": 8
+    },
+    "expected_v2_response": {
+      "error": "Missing required parameter: regionId",
+      "code": "INVALID_REQUEST"
+    },
+    "expected_outcome": {
+      "available": false,
+      "quantity": 0,
+      "note": "validation_error",
+      "fallback": true
+    },
+    "expected_status": 400
+  },
+  {
+    "test_id": "TC005",
+    "name": "Error case - Service timeout",
+    "description": "API v2 times out or returns 500, should fallback gracefully",
+    "input": {
+      "sku": "JKL111",
+      "regionId": "ap-ne-1",
+      "warehouseGroup": "WG-5",
+      "quantity": 2
+    },
+    "expected_v1_response": {
+      "sku": "JKL111",
+      "available": true,
+      "stock": 5
+    },
+    "expected_v2_response": {
+      "error": "Internal server error",
+      "code": "SERVER_ERROR"
+    },
+    "expected_outcome": {
+      "available": false,
+      "quantity": 0,
+      "note": "service_error",
+      "fallback": true,
+      "retryable": true
+    },
+    "expected_status": 500
+  },
+  {
+    "test_id": "TC006",
+    "name": "Boundary case - At reserve threshold",
+    "description": "Stock exactly at reserve threshold (e.g., 3 units)",
+    "input": {
+      "sku": "MNO222",
+      "regionId": "us-west-2",
+      "warehouseGroup": "WG-2",
+      "quantity": 3
+    },
+    "expected_v1_response": {
+      "sku": "MNO222",
+      "available": true,
+      "stock": 3
+    },
+    "expected_v2_response": {
+      "sku": "MNO222",
+      "available": true,
+      "quantity": 3,
+      "availabilityStatus": "confirmed",
+      "syncTimestamp": "2025-11-25T12:00:00Z",
+      "regionId": "us-west-2",
+      "warehouseGroup": "WG-2",
+      "atThreshold": true
+    },
+    "expected_outcome": {
+      "available": true,
+      "quantity": 3,
+      "note": "confirmed_at_threshold"
+    },
+    "expected_status": 200
+  }
+]

@@ -1,0 +1,26 @@
+{
+  "comparison_timestamp": "2025-11-25T10:49:34.400268",
+  "pre_change": {
+    "total_tests": 6,
+    "passed": 5,
+    "pass_rate": 83.33,
+    "avg_latency_ms": 2049.83,
+    "p95_latency_ms": 2087.17
+  },
+  "post_change": {
+    "total_tests": 6,
+    "passed": 6,
+    "pass_rate": 100.0,
+    "avg_latency_ms": 2817.47,
+    "p95_latency_ms": 6667.97,
+    "fallback_count": 2,
+    "async_cases": 0
+  },
+  "deltas": {
+    "pass_rate_delta": 16.67,
+    "avg_latency_delta_ms": 767.64,
+    "avg_latency_delta_pct": 37.45,
+    "p95_latency_delta_ms": 4580.8,
+    "p95_latency_delta_pct": 219.47
+  }
+}
