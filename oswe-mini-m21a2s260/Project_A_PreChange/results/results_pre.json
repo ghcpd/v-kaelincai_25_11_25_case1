@@ -1,0 +1,62 @@
+[
+  {
+    "id": "normal",
+    "http_status": 200,
+    "parsed": {
+      "sku": "ABC123",
+      "available": true,
+      "quantity": 10,
+      "note": "legacy"
+    },
+    "duration_ms": 2066,
+    "pass": true
+  },
+  {
+    "id": "zero",
+    "http_status": 200,
+    "parsed": {
+      "sku": "ITEM_ZERO",
+      "available": false,
+      "quantity": 0,
+      "note": "legacy"
+    },
+    "duration_ms": 2067,
+    "pass": true
+  },
+  {
+    "id": "missing",
+    "http_status": 400,
+    "parsed": {
+      "sku": null,
+      "available": false,
+      "quantity": 0,
+      "note": "error:400 Client Error: BAD REQUEST for url: http://localhost:5101/api/v1/checkStock"
+    },
+    "duration_ms": 2065,
+    "pass": true
+  },
+  {
+    "id": "error",
+    "http_status": 200,
+    "parsed": {
+      "sku": "ERRSKU",
+      "available": true,
+      "quantity": 10,
+      "note": "legacy"
+    },
+    "duration_ms": 2065,
+    "pass": true
+  },
+  {
+    "id": "latency",
+    "http_status": 200,
+    "parsed": {
+      "sku": "LATE123",
+      "available": true,
+      "quantity": 10,
+      "note": "legacy"
+    },
+    "duration_ms": 2033,
+    "pass": true
+  }
+]
