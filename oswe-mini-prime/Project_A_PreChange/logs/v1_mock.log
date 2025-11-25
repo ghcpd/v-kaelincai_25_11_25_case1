@@ -1,0 +1,19 @@
+v1_mock starting from C:\c\chatWorkspace\Project_A_PreChange\mocks\v1_mock.py mtime=1764038173.633862
+ * Serving Flask app 'v1_mock'
+ * Debug mode: off
+WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5001
+ * Running on http://172.16.61.51:5001
+Press CTRL+C to quit
+127.0.0.1 - - [25/Nov/2025 10:42:03] "GET / HTTP/1.1" 200 -
+127.0.0.1 - - [25/Nov/2025 10:42:08] "POST /api/v1/checkStock HTTP/1.1" 200 -
+127.0.0.1 - - [25/Nov/2025 10:42:10] "POST /_admin/reset HTTP/1.1" 200 -
+127.0.0.1 - - [25/Nov/2025 10:42:14] "POST /api/v1/checkStock HTTP/1.1" 200 -
+127.0.0.1 - - [25/Nov/2025 10:42:16] "POST /_admin/reset HTTP/1.1" 200 -
+127.0.0.1 - - [25/Nov/2025 10:42:20] "POST /_admin/reset HTTP/1.1" 200 -
+127.0.0.1 - - [25/Nov/2025 10:42:23] "POST /_admin/set_error_rate HTTP/1.1" 200 -
+127.0.0.1 - - [25/Nov/2025 10:42:27] "POST /api/v1/checkStock HTTP/1.1" 500 -
+127.0.0.1 - - [25/Nov/2025 10:42:29] "POST /_admin/reset HTTP/1.1" 200 -
+127.0.0.1 - - [25/Nov/2025 10:42:31] "POST /_admin/set_delay HTTP/1.1" 200 -
+127.0.0.1 - - [25/Nov/2025 10:42:42] "POST /_admin/reset HTTP/1.1" 200 -
